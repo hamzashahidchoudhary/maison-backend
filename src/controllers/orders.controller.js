@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma.js'
+import { sendOrderConfirmationEmail } from '../lib/email.js'
 
 // POST /orders
 export const createOrder = async (req, res) => {
@@ -35,6 +36,9 @@ export const createOrder = async (req, res) => {
         items: { include: { product: true } }
       }
     })
+
+    // Send confirmation email — don't block the response on this
+    sendOrderConfirmationEmail(order)
 
     res.status(201).json(order)
   } catch (err) {
