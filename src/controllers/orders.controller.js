@@ -89,3 +89,33 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch orders.' })
   }
 }
+
+// PUT /admin/orders/:id/status (admin: update order status)
+const validStatuses = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` })
+    }
+
+    const order = await prisma.order.update({
+      where: { id: Number(req.params.id) },
+      data: { status },
+      include: {
+        user: { select: { name: true, email: true } },
+        items: { include: { product: true } }
+      }
+    })
+
+    res.json(order)
+  } catch (err) {
+    console.error('Update order status error:', err)
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Order not found.' })
+    }
+    res.status(500).json({ error: 'Failed to update order status.' })
+  }
+}
