@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { register, login, getMe } from '../controllers/auth.controller.js'
 import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js'
 import { createOrder, getOrders, getOrder, getAllOrders, updateOrderStatus } from '../controllers/orders.controller.js'
+import { getProductReviews, createReview, deleteReview } from '../controllers/reviews.controller.js'
 import { createPaymentIntent, stripeWebhook } from '../controllers/payments.controller.js'
 import { protect, adminOnly } from '../middleware/auth.js'
 
@@ -18,6 +19,11 @@ router.get('/products/:id', getProduct)
 router.post('/products', protect, adminOnly, createProduct)
 router.put('/products/:id', protect, adminOnly, updateProduct)
 router.delete('/products/:id', protect, adminOnly, deleteProduct)
+
+// ─── Reviews ─────────────────────────────────────────
+router.get('/products/:id/reviews', getProductReviews)
+router.post('/products/:id/reviews', protect, createReview)
+router.delete('/products/:id/reviews/:reviewId', protect, deleteReview)
 
 // ─── Orders ──────────────────────────────────────────
 router.post('/orders', protect, createOrder)

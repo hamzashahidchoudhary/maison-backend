@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  reviews   Review[]
 }
 
 model Product {
@@ -36,6 +37,20 @@ model Product {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]
+  productReviews Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      // 1-5
+  comment   String
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId]) // one review per user per product
 }
 
 model Order {
